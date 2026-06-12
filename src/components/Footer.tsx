@@ -1,5 +1,6 @@
 import React from 'react';
-import { GraduationCap, Phone, Mail, ChevronRight, Instagram, Linkedin, MessageSquare } from 'lucide-react';
+import { Phone, Mail, ChevronRight, Instagram, Linkedin, MessageSquare } from 'lucide-react';
+import Logo from './Logo';
 
 interface FooterProps {
   onNavigate: (sectionId: string) => void;
@@ -42,19 +43,7 @@ export default function Footer({ onNavigate }: FooterProps) {
         <div className="grid grid-cols-1 md:grid-cols-12 gap-10">
           {/* Logo Column */}
           <div className="md:col-span-5 space-y-6">
-            <div className="flex items-center space-x-3 cursor-pointer" onClick={() => onNavigate('hero')}>
-              <div className="h-10 w-10 rounded-xl bg-gradient-to-tr from-sky-500 to-indigo-500 flex items-center justify-center">
-                <GraduationCap className="h-5.5 w-5.5 text-white" />
-              </div>
-              <div>
-                <span className="text-lg font-bold font-display text-white tracking-tight">
-                  Tech<span className="text-sky-400 font-extrabold">Dost</span>
-                </span>
-                <span className="block text-[8px] font-mono tracking-widest text-slate-500 uppercase leading-none">
-                  PRACTICAL TECH LEARNING
-                </span>
-              </div>
-            </div>
+            <Logo onClick={() => onNavigate('hero')} size="sm" className="cursor-pointer" />
 
             <p className="text-sm text-slate-400 max-w-sm leading-relaxed">
               TechDost is a technology education and training platform dedicated to providing practical, industry-focused learning in programming, web development, AI, prompt engineering, electronics, and career-oriented technical skills.

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { GraduationCap, Phone, Menu, X, ArrowRight } from 'lucide-react';
+import { Phone, Menu, X, ArrowRight } from 'lucide-react';
+import Logo from './Logo';
 
 interface NavbarProps {
   onNavigate: (sectionId: string) => void;
@@ -40,22 +41,7 @@ export default function Navbar({ onNavigate, activeSection }: NavbarProps) {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-20">
           {/* Logo */}
-          <div
-            onClick={() => handleItemClick('hero')}
-            className="flex items-center space-x-3 cursor-pointer group"
-          >
-            <div className="h-11 w-11 rounded-xl bg-gradient-to-tr from-sky-500 to-indigo-500 flex items-center justify-center shadow-lg shadow-sky-500/10 group-hover:scale-105 transition-transform duration-300">
-              <GraduationCap className="h-6 w-6 text-white" />
-            </div>
-            <div>
-              <span className="text-xl font-bold font-display tracking-tight text-white group-hover:text-sky-400 transition-colors duration-300">
-                Tech<span className="text-sky-400 font-extrabold">Dost</span>
-              </span>
-              <span className="block text-[10px] font-mono tracking-widest text-slate-400 uppercase leading-none mt-0.5">
-                PRACTICAL LEARNING
-              </span>
-            </div>
-          </div>
+          <Logo onClick={() => handleItemClick('hero')} size="md" className="cursor-pointer group" />
 
           {/* Desktop Nav Items */}
           <nav className="hidden md:flex items-center space-x-1">
