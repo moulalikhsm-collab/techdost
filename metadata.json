@@ -1,0 +1,8 @@
+{
+  "name": "TechDost",
+  "description": "Technology education and training platform offering practical, industry-focused learning in programming, web development, AI, prompt engineering, electronics, and career-oriented technical skills.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
