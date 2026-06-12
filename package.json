@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "tsx server.ts",
-    "build": "vite build && esbuild server.ts --bundle --platform=node --format=cjs --packages=external --sourcemap --outfile=dist/server.cjs",
+    "build": "vite build && esbuild server.ts --bundle --platform=node --format=cjs --packages=external --sourcemap --outfile=dist/server.cjs && (for f in *.html; do [ \"$f\" = \"index.html\" ] || cp \"$f\" dist/ 2>/dev/null || true; done) && (cp *.txt dist/ 2>/dev/null || true) && (for f in *.json; do [ \"$f\" = \"package.json\" ] || [ \"$f\" = \"package-lock.json\" ] || [ \"$f\" = \"metadata.json\" ] || [ \"$f\" = \"tsconfig.json\" ] || [ \"$f\" = \"firebase-blueprint.json\" ] || cp \"$f\" dist/ 2>/dev/null || true; done)",
     "start": "node dist/server.cjs",
     "clean": "rm -rf dist server.js",
     "lint": "tsc --noEmit"
