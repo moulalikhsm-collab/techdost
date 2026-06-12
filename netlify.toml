@@ -1,0 +1,17 @@
+[build]
+  command = "npm run build"
+  publish = "dist"
+
+# Redirect rules to ensure single-page application (SPA) routing works correctly.
+# This prevents 404 errors when users refresh or navigate directly to sub-paths.
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+# Optional redirect rule to route /api inquiries to custom backend services or Netlify Functions
+# if serverless functions are configured in the future.
+# [[redirects]]
+#   from = "/api/*"
+#   to = "/.netlify/functions/api/:splat"
+#   status = 200
