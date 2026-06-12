@@ -2,13 +2,115 @@ import express from "express";
 import path from "path";
 import { createServer as createViteServer } from "vite";
 import { GoogleGenAI } from "@google/genai";
+import nodemailer from "nodemailer";
 import "dotenv/config";
+
+// Lazy-initialization of SMTP Transporter to prevent crashes if keys are not fully configured yet.
+function getMailTransporter() {
+  const host = process.env.SMTP_HOST;
+  const port = parseInt(process.env.SMTP_PORT || "587", 10);
+  const user = process.env.SMTP_USER;
+  const pass = process.env.SMTP_PASS;
+
+  if (!user || !pass) {
+    console.warn("SMTP_USER and/or SMTP_PASS are not configured in environment variable secrets. Email delivery will be bypassed gracefully.");
+    return null;
+  }
+
+  return nodemailer.createTransport({
+    host: host || "smtp.gmail.com",
+    port,
+    secure: port === 465,
+    auth: {
+      user,
+      pass,
+    },
+  });
+}
 
 async function startServer() {
   const app = express();
   const PORT = 3000;
 
   app.use(express.json());
+
+  // API Route for Admissions Contact Form
+  app.post("/api/contact", async (req, res) => {
+    try {
+      const { name, email, phone, courseId, message } = req.body;
+
+      if (!name || !email || !phone || !message) {
+        return res.status(400).json({ error: "Please fill in all required fields (Name, Email, Phone, and Message)." });
+      }
+
+      console.log(`[Admissions Engine] Parsing contact submission: Name: ${name}, Email: ${email}, Course: ${courseId}`);
+
+      const transporter = getMailTransporter();
+      if (!transporter) {
+        // Fallback gracefully so that preview works perfectly even without configured secrets
+        return res.json({
+          success: true,
+          warned: true,
+          message: "Thank you! Your inquiries are processed successfully! (Note: Since SMTP server secrets are not active in the app's settings yet, the digital enrollment wasn't sent to 'sereneselina9@gmail.com' via SMTP, but it is logged on your locally persistent console list below!)."
+        });
+      }
+
+      const smtpUser = process.env.SMTP_USER;
+      await transporter.sendMail({
+        from: `"TechDost Admissions" <${smtpUser}>`,
+        to: "sereneselina9@gmail.com",
+        replyTo: email,
+        subject: `[TechDost Enrollment] Inquiry from ${name} (${courseId.toUpperCase()})`,
+        text: `New Admissions Form Submission:\n\nStudent Name: ${name}\nEmail Address: ${email}\nTelephone: ${phone}\nTactical Course: ${courseId}\n\nCareer Goals / Inquiry:\n${message}\n\n-- TechDost Admissions Hub`,
+        html: `
+          <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e2e8f0; border-radius: 12px; background-color: #ffffff;">
+            <h2 style="color: #0369a1; font-weight: 800; border-bottom: 2px solid #e2e8f0; padding-bottom: 12px; margin-top: 0;">
+              TechDost Digital Admissions Submission
+            </h2>
+            <p style="font-size: 14px; color: #334155;">A new student enrollment or partnership inquiry has been compiled from the web interface:</p>
+            <table style="width: 100%; border-collapse: collapse; margin: 18px 0; font-size: 14px;">
+              <tr>
+                <td style="padding: 8px 0; font-weight: bold; color: #475569; width: 140px;">Student Name:</td>
+                <td style="padding: 8px 0; color: #0f172a;">${name}</td>
+              </tr>
+              <tr>
+                <td style="padding: 8px 0; font-weight: bold; color: #475569;">Email Address:</td>
+                <td style="padding: 8px 0; color: #0f172a;"><a href="mailto:${email}" style="color: #2563eb; text-decoration: none;">${email}</a></td>
+              </tr>
+              <tr>
+                <td style="padding: 8px 0; font-weight: bold; color: #475569;">Phone Contact:</td>
+                <td style="padding: 8px 0; color: #0f172a; font-family: monospace;">${phone}</td>
+              </tr>
+              <tr>
+                <td style="padding: 8px 0; font-weight: bold; color: #475569;">Target Course:</td>
+                <td style="padding: 8px 0; color: #0f172a; font-weight: bold; text-transform: uppercase;">${courseId}</td>
+              </tr>
+            </table>
+            <div style="background-color: #f8fafc; border-left: 4px solid #0ea5e9; padding: 12px 16px; margin: 20px 0; border-radius: 4px;">
+              <span style="display: block; font-size: 12px; font-weight: bold; text-transform: uppercase; color: #64748b; margin-bottom: 4px;">Student Goals:</span>
+              <p style="margin: 0; font-size: 14px; color: #334155; line-height: 1.6; font-style: italic;">"${message}"</p>
+            </div>
+            <p style="font-size: 11px; color: #94a3b8; text-align: center; border-top: 1px solid #f1f5f9; padding-top: 12px; margin-bottom: 0;">
+              This notification was generated automatically by the TechDost Web Client on ${new Date().toLocaleString()}.
+            </p>
+          </div>
+        `,
+      });
+
+      console.log(`[Admissions Engine] Email successfully dispatched to sereneselina9@gmail.com!`);
+      return res.json({
+        success: true,
+        message: "Your inquiry has been successfully sent directly to 'sereneselina9@gmail.com'! We will reach out to you within 24 hours."
+      });
+    } catch (err: any) {
+      console.error("[Admissions Engine] Email delivery err:", err);
+      return res.json({
+        success: true,
+        warned: true,
+        message: `Your inquiry was submitted successfully! (Note: There was an issue delivering the email to 'sereneselina9@gmail.com' due to SMTP server authorization failure: ${err.message || err}. You can see your inquiry safely registered below!).`
+      });
+    }
+  });
 
   // API Route for Gemini Chat queries
   app.post("/api/chat", async (req, res) => {
@@ -69,13 +171,12 @@ Here are the complete details of TechDost:
 
 ### 3. COMPLETE COURSE PORTFOLIO
 
-A. Full-Stack Web Development Course:
+A. Web Development Course:
 - Category: web-dev
 - Difficulty: Beginner
-- Duration: 10 Weeks
+- Duration: 10 weeks
+- Price: ₹50
 - Description: Learn to design, model, and deploy production-ready web applications from scratch using modern React, Node.js, Express, and databases.
-- Long Overview: Covers user-interface design with Tailwind CSS, modular component architecture in React, state management, backend servers, databases, and continuous scaling deployment. Students deploy 4 production-grade projects.
-- Core Skills: HTML5 & CSS3, Tailwind CSS, JavaScript ES6+, React Hooks & Router, Node.js & Express, MongoDB & SQL, Git & GitHub, VPS & Cloud Hosting.
 - Syllabus Framework:
   - Week 1-2: Front-End Foundations (Semantic HTML, Flexbox, CSS Grid, Tailwind CSS responsive layouts)
   - Week 3-4: Dynamic JavaScript (DOM Manipulation, Async/Await, Fetching third-party REST APIs)
@@ -83,54 +184,51 @@ A. Full-Stack Web Development Course:
   - Week 7-8: Backend Frameworks (Building modular REST APIs with Express, Middleware pipelines, JWT auth)
   - Week 9-10: Database Systems & Cloud Ingress (Data security, ORM/ODM modeling, CI/CD, and deploying to cloud platforms)
 
-B. Core Programming & DSA (Data Structures & Algorithms):
-- Category: programming
-- Difficulty: All Levels
-- Duration: 8 Weeks
-- Description: Master computer science fundamentals, object-oriented paradigms, and algorithm design to crack high-paying technical interviews.
-- Long Overview: Focused deep into syntax execution in Python / Java / C++, and then building structural proficiency in arrays, linked lists, trees, graphs, sorting, and search routines.
-- Core Skills: Programming Logic, Python / Java / C++, Object-Oriented Coding, Memory Management, Data Structures (Trees, Graphs), Algorithmic Optimization, Competitive Problem-Solving, Complexity Analysis.
-- Syllabus Framework:
-  - Week 1-2: Coding Core (Logical statements, Loops, Functions, and Memory pointers)
-  - Week 3-4: Advanced OOP (Inheritance, Polymorphism, Interfaces, and SOLID design principles)
-  - Week 5-6: Classic Data Structures (Double Linked Lists, Stacks, Queues, Binary Trees, Max Heaps)
-  - Week 7: Graph Algorithms & Dynamic Programming (BFS, DFS, Dijkstra, Memoization puzzles)
-  - Week 8: Interview Training (Reconstructing FAANG coding puzzles, optimizing time metrics, and whiteboard simulations)
-
-C. Applied AI & Machine Learning:
-- Category: ai-ml
-- Difficulty: Intermediate
-- Duration: 12 Weeks
-- Description: Bridge the gap between theoretical AI models and real-world deployment. Train and implement neural networks with Python/TensorFlow.
-- Long Overview: Tailored for developers seeking to harness the power of artificial intelligence. Bypasses long math proofs and focuses directly on compiling datasets, preparing variables, selecting regression/classification pipelines, building and training neural networks, custom fine-tuning processes, and deploying models as service endpoints.
-- Core Skills: Python Data Science, NumPy & Pandas, Regression & Classifiers, Supervised Learning, Deep Learning & Neural Nets, TensorFlow & PyTorch, Model Hosting & Services, AI Agent Orchestration.
-- Syllabus Framework:
-  - Week 1-3: Modern Data Handling (Scoping features with Pandas, performing statistics, clean-room prepping)
-  - Week 4-6: Classical Machine Learning (Scikit-Learn algorithms, Random Forests, SVMs, hyper-parameter tuning)
-  - Week 7-9: Neural Networks & Deep Learning (Formulating activation functions, custom layers in TensorFlow & PyTorch)
-  - Week 10-11: Practical NLP & Vision (Fine-tuning pre-trained Transformers, building custom visual classifiers)
-  - Week 12: Production AI (Wrapping model weights inside microservice containers, building inference pipelines)
-
-D. Professional Prompt Engineering:
-- Category: prompt-engineering
+B. Python Programming Course:
+- Category: python
 - Difficulty: Beginner
-- Duration: 4 Weeks
-- Description: Unlock LLMs to automate tasks. Deep dive into context injection, chain-of-thought, autonomous agents, and RAG systems.
-- Long Overview: Learn systematic techniques to elicit highly precise, deterministic, and structured answers from LLMs. Discover how to safely chain intelligence, coordinate API tools, prevent prompting jailbreaks, and orchestrate automated AI workflows.
-- Core Skills: Few-Shot Examples, Structured Data Outputs, Chain-of-Thought (CoT), System Instructions, Embedding & Vector DBs, RAG Integration, Agent Tools & Function-Calling, Security & Guardrails.
+- Duration: 8 weeks
+- Price: ₹50
+- Description: Master Python from scratch: syntax, object-oriented concepts, data structures, automation scripting, and backend library integration.
 - Syllabus Framework:
-  - Week 1: Foundations of LLMs (Deep dive into token logic, parameters, temperature metrics, and context windows)
-  - Week 2: Direct Prompt Strategies (Applying Few-Shot templates, Markdown delimiters, and parsing custom JSON outputs)
-  - Week 3: Advanced Cognitive Chaining (Constructing Chain-of-Thought, ReAct, and Self-Reflection frameworks)
-  - Week 4: Real-World Integrations (Connecting prompts to Vector Databases via RAG, implementing smart tools, and security auditing)
+  - Week 1-2: Python Fundamentals (Variables, loops, lists, dictionaries, functions, logical trees)
+  - Week 3-4: OOP & Memory Model (Classes, inheritance, polymorphism, exceptions, package management)
+  - Week 5-6: Data Scoping & File I/O (JSON parsing, CSV handling, web scraping with BeautifulSoup, NumPy basics)
+  - Week 7: REST API Pipelines (Creating backend services with Flask, HTTP requests, endpoint testing)
+  - Week 8: Custom Automation (Scheduled cron-jobs, system automation scripts, and unit-testing workflows)
 
-E. Practical Electronics & IoT (Internet of Things):
+C. Java + DSA Course:
+- Category: java-dsa
+- Difficulty: All Levels
+- Duration: 8 weeks
+- Price: ₹100
+- Description: Master computer science fundamentals, object-oriented paradigms, and algorithm design to crack technical interviews.
+- Syllabus Framework:
+  - Week 1-2: Java OOP Core (Classes, Interfaces, Polymorphism, and garbage collection)
+  - Week 3-4: Classic Data Structures (Double Linked Lists, Stacks, Queues, Binary Trees)
+  - Week 5-6: Advanced Trees & Sorting (AVL trees, Heap Sort, Quick/Merge Sort complex optimization)
+  - Week 7: Graphs & Dynamic Programming (BFS, DFS, Dijkstra, memoization puzzles)
+  - Week 8: Interview Preparation (Acing coding puzzles, runtime optimizations, and simulation questions)
+
+D. C Language Course:
+- Category: c-language
+- Difficulty: Beginner
+- Duration: 6 weeks
+- Price: ₹50
+- Description: Build a rock-solid foundation in computer science. Master pointers, manual memory allocation, data structures, and hardware-level concepts.
+- Syllabus Framework:
+  - Week 1-2: Procedural Foundations (Data types, logical statements, nested loops, functional scoping)
+  - Week 3: Deep Dive Pointers (Memory addresses, pointer arithmetic, double-pointers, reference arguments)
+  - Week 4: Custom Composites (Defining structs/unions, manual dynamic memory buffers with malloc/realloc)
+  - Week 5: Stream Handling (Standard binary and text files reading/writing, preprocessing macros, header files)
+  - Week 6: Classic DSA in C (Bitwise mapping, implementing double-linked lists, custom stacks and queues)
+
+E. Basic Electronics Course:
 - Category: electronics
 - Difficulty: Beginner
-- Duration: 8 Weeks
-- Description: Design custom electronic circuits and code firmware for microcontrollers. Bring your hardware inventions to life.
-- Long Overview: Perfect for makers, developers, and automation hobbyists. Leads from breadboard physics over Ohm’s law to reading electronic meters, soldering securely, compiling C++ firmware onto Arduino, integrating sensors, driving motors, and activating high-voltage appliances.
-- Core Skills: Ohm's Law & Circuit Design, Breadboard Prototyping, Arduino C++ Syntax, Sensor Reading (I2C, SPI), Wireless Communications, Motor Controls & relays, Raspberry Pi OS foundations, IoT Cloud Infrastructure.
+- Duration: 8 weeks
+- Price: ₹50
+- Description: Design custom electronic circuits and code firmware for microcontrollers. Bring physical hardware inventions to life.
 - Syllabus Framework:
   - Week 1-2: Electricity & Components (Resistance, Capacitors, Transistors, and reading circuits)
   - Week 3-4: Microcontroller Essentials (Learning Arduino IDE, structure of Setup/Loop, editing GPIO pins)
@@ -138,24 +236,22 @@ E. Practical Electronics & IoT (Internet of Things):
   - Week 7: Actuators & High Mains (Activating solenoids, driving stepper motors, routing safe AC mains relays)
   - Week 8: Networked IoT (Programming ESP8266 microchips, updating visual cloud dashboards, and publishing MQTT feeds)
 
-F. Career-Oriented Tech Bootcamp:
-- Category: career-skills
+F. Prompt Engineering Course:
+- Category: prompt-engineering
 - Difficulty: Beginner
-- Duration: 6 Weeks
-- Description: Banish the anxiety of job hunting. Acquire personal branding, rewrite resumes, master mock codes, and scale portfolios.
-- Long Overview: Rigorous 1-on-1 resume rebuilding, creating a robust personal brand, highlighting high-tier projects effectively, practicing live video coding rounds, and learning the art of professional technical communication.
-- Core Skills: Resume Transformation, GitHub Portfolio Design, LinkedIn Professional Growth, Coding Interview Tactics, System Scaling Basics, Freelance Consulting Secrets, Advanced Salary Negotiation.
+- Duration: 4 weeks
+- Price: ₹50
+- Description: Unlock LLMs to automate tasks. Deep dive into context injection, chain-of-thought, autonomous agents, and RAG systems.
 - Syllabus Framework:
-  - Week 1: Brand Building (Re-arranging GitHub profiles, hosting live demo cards, structuring projects visually)
-  - Week 2: Standout Resume Secrets (Drafting machine-readable resumes, highlighting key technical impact over descriptions)
-  - Week 3-4: Live Technical Prep (Practicing mock database architectures, structuring systems, whiteboard solving)
-  - Week 5: Career Communication (Expressing modular code thoughts logically to interviewers, handling scenario questions)
-  - Week 6: Contract & Offer Strategy (Navigating freelance marketplaces, evaluating health/equity packages, and negotiating)
+  - Week 1: Foundations of LLMs (Deep dive into token logic, parameters, temperature metrics, and context windows)
+  - Week 2: Direct Prompt Strategies (Applying Few-Shot templates, Markdown delimiters, and parsing custom JSON outputs)
+  - Week 3: Advanced Cognitive Chaining (Constructing Chain-of-Thought, ReAct, and Self-Reflection frameworks)
+  - Week 4: Real-World Integrations (Connecting prompts to Vector Databases via RAG, implementing smart tools, and security auditing)
 
 ### 4. FREQUENTLY ASKED QUESTIONS (FAQs)
-- Kits/Hardware: Detailed component bill-of-materials and assist in sourcing locally or online. Supplied for classroom cohorts.
+- Kits/Hardware: Since our training is 100% online, we assist in sourcing components online via detailed guides and utilize high-fidelity virtual simulators like Tinkercad and Wokwi for circuit prototyping.
 - Prerequisites: Absolutely zero programming background required for beginner-friendly tracks!
-- Format: Hybrid, involving comprehensive conceptual drills paired with intense, live interactive coding labs, workspace code reviews, and direct 1-on-1 mentorship.
+- Format: 100% online hybrid format, combining flexible pre-recorded conceptual drills with live interactive online workshops, Screen-share code reviews, and direct 1-on-1 virtual mentoring sessions.
 - Contact hotline: Call/text admission desk at +91 9491089687, or write to sereneselina9@gmail.com.
 
 ### 5. STUDENT SUCCESS STORIES

@@ -8,10 +8,11 @@ interface ChatMessage {
 }
 
 const QUICK_SUGGESTIONS = [
-  "Tell me about Full-Stack Web Dev syllabus?",
-  "What is the phone number for inquiries?",
-  "Tell me about Applied AI & Machine Learning?",
-  "Are classes live or recorded?"
+  "What is the price of the Java + DSA course?",
+  "Tell me about the Web Development syllabus?",
+  "What is covered in C Language course?",
+  "Tell me about the Python Programming syllabus?",
+  "What is the contact number for admissions?"
 ];
 
 export default function ChatBot() {
@@ -20,7 +21,7 @@ export default function ChatBot() {
   const [history, setHistory] = useState<ChatMessage[]>([
     {
       role: "model",
-      content: "Hello! I am **DostAI**, the TechDost helper. 🤝 Ask me anything about our programming, web dev, AI, electronics courses, batch syllabi, or partnerships! How can I accelerate your learning journey today?"
+      content: "Hello! I am **DostAI**, the TechDost helper. 🤝 Ask me anything about our Web Development, Python, Java + DSA, C Language, Basic Electronics, or Prompt Engineering courses! How can I accelerate your learning journey today?"
     }
   ]);
   const [isLoading, setIsLoading] = useState(false);

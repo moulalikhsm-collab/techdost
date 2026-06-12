@@ -20,9 +20,6 @@ export default function Navbar({ onNavigate, activeSection }: NavbarProps) {
 
   const navItems = [
     { label: 'Courses', href: 'courses' },
-    { label: 'Interactive Playground', href: 'playground' },
-    { label: 'Career Roadmap', href: 'roadmap' },
-    { label: 'Success Stories', href: 'testimonials' },
     { label: 'F.A.Q', href: 'faqs' },
     { label: 'Contact', href: 'contact' },
   ];

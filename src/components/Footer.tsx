@@ -1,5 +1,5 @@
 import React from 'react';
-import { GraduationCap, Phone, Mail, ChevronRight, MessageSquareCode } from 'lucide-react';
+import { GraduationCap, Phone, Mail, ChevronRight, Instagram, Linkedin, MessageSquare } from 'lucide-react';
 
 interface FooterProps {
   onNavigate: (sectionId: string) => void;
@@ -8,10 +8,32 @@ interface FooterProps {
 export default function Footer({ onNavigate }: FooterProps) {
   const links = [
     { label: 'Specialized Courses', href: 'courses' },
-    { label: 'Interactive Sandbox', href: 'playground' },
-    { label: 'Success Testimonials', href: 'testimonials' },
     { label: 'Admissions Inquiry', href: 'contact' },
     { label: 'F.A.Q Catalog', href: 'faqs' }
+  ];
+
+  const socialLinks = [
+    {
+      name: 'WhatsApp',
+      href: 'https://whatsapp.com/channel/0029Vb7wnXSFHWpxQ7L9wQ31',
+      icon: <MessageSquare className="h-4.5 w-4.5" />,
+      color: 'hover:text-emerald-400 hover:border-emerald-500/30 hover:bg-emerald-500/10',
+      tooltip: 'Join our WhatsApp Channel'
+    },
+    {
+      name: 'Instagram',
+      href: 'https://www.instagram.com/techdost.30?igsh=amU4MWJ3cndkaHpm',
+      icon: <Instagram className="h-4.5 w-4.5" />,
+      color: 'hover:text-pink-400 hover:border-pink-500/30 hover:bg-pink-500/10',
+      tooltip: 'Follow us on Instagram'
+    },
+    {
+      name: 'LinkedIn',
+      href: 'https://www.linkedin.com',
+      icon: <Linkedin className="h-4.5 w-4.5" />,
+      color: 'hover:text-sky-400 hover:border-sky-500/30 hover:bg-sky-500/10',
+      tooltip: 'Connect on LinkedIn'
+    }
   ];
 
   return (
@@ -41,6 +63,26 @@ export default function Footer({ onNavigate }: FooterProps) {
             <span className="block text-xs uppercase font-mono tracking-wider text-slate-500">
               Our Mission: Make quality tech education accessible & help students build real-world skills.
             </span>
+
+            <div className="pt-2">
+              <span className="block text-[10px] font-mono tracking-widest text-slate-500 uppercase mb-3">
+                Join our Social Circles
+              </span>
+              <div className="flex items-center gap-3">
+                {socialLinks.map((social) => (
+                  <a
+                    key={social.name}
+                    href={social.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    title={social.tooltip}
+                    className={`h-9 w-9 rounded-lg bg-slate-900 border border-slate-800 flex items-center justify-center text-slate-400 font-medium transition-all duration-300 cursor-pointer ${social.color}`}
+                  >
+                    {social.icon}
+                  </a>
+                ))}
+              </div>
+            </div>
           </div>
 
           {/* Quick Links Column */}

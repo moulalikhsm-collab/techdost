@@ -30,12 +30,12 @@ export default function Courses({ onInquireCourse }: CoursesProps) {
 
   const categories: { label: string; value: CourseCategory }[] = [
     { label: 'All Modules', value: 'all' },
-    { label: 'Programming & DSA', value: 'programming' },
     { label: 'Web Development', value: 'web-dev' },
-    { label: 'Artificial Intelligence', value: 'ai-ml' },
+    { label: 'Python', value: 'python' },
+    { label: 'Java + DSA', value: 'java-dsa' },
+    { label: 'C Language', value: 'c-language' },
+    { label: 'Basic Electronics', value: 'electronics' },
     { label: 'Prompt Engineering', value: 'prompt-engineering' },
-    { label: 'Electronics & IoT', value: 'electronics' },
-    { label: 'Career Mentorship', value: 'career-skills' },
   ];
 
   const filteredCourses = selectedCategory === 'all'
@@ -143,9 +143,14 @@ export default function Courses({ onInquireCourse }: CoursesProps) {
                 </div>
 
                 <div className="space-y-2">
-                  <h3 className="text-xl font-bold text-white group-hover:text-sky-400 transition-colors">
-                    {course.title}
-                  </h3>
+                  <div className="flex items-start justify-between gap-2">
+                    <h3 className="text-xl font-bold text-white group-hover:text-sky-400 transition-colors">
+                      {course.title}
+                    </h3>
+                    <span className="text-emerald-400 font-extrabold font-mono text-base whitespace-nowrap bg-emerald-500/10 px-2.5 py-0.5 rounded-lg border border-emerald-500/20 shadow-sm">
+                      ₹{course.price}
+                    </span>
+                  </div>
                   <p className="text-slate-400 text-sm leading-relaxed line-clamp-3">
                     {course.description}
                   </p>
@@ -237,8 +242,13 @@ export default function Courses({ onInquireCourse }: CoursesProps) {
                 <div className="h-10 w-10 rounded-lg bg-slate-900 border border-slate-800 flex items-center justify-center">
                   {renderIcon(selectedCourse.iconName)}
                 </div>
-                <div>
-                  <h3 className="text-xl font-bold text-white">{selectedCourse.title}</h3>
+                 <div>
+                  <div className="flex items-center gap-3">
+                    <h3 className="text-xl font-bold text-white">{selectedCourse.title}</h3>
+                    <span className="text-emerald-400 font-extrabold font-mono text-sm bg-emerald-500/10 px-2 rounded-lg border border-emerald-500/20">
+                      ₹{selectedCourse.price}
+                    </span>
+                  </div>
                   <div className="flex items-center space-x-2.5 text-xs font-mono text-slate-400">
                     <span>{selectedCourse.duration}</span>
                     <span>•</span>

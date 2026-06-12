@@ -27,7 +27,7 @@ export default function FAQs() {
             Frequently Asked Queries
           </h2>
           <p className="text-slate-400 text-sm">
-            Everything you need to know about TechDost, practical electronics labs, hybrid training courses, and enrollment schedules.
+            Everything you need to know about TechDost, practical virtual labs, 100% online courses, and instant admissions.
           </p>
         </div>
 

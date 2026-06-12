@@ -7,13 +7,11 @@ import React, { useState, useEffect } from 'react';
 import Navbar from './components/Navbar';
 import Hero from './components/Hero';
 import Courses from './components/Courses';
-import InteractivePlayground from './components/InteractivePlayground';
-import Roadmap from './components/Roadmap';
-import Testimonials from './components/Testimonials';
 import FAQs from './components/FAQs';
 import Contact from './components/Contact';
 import Footer from './components/Footer';
 import ChatBot from './components/ChatBot';
+import QuickCall from './components/QuickCall';
 
 export default function App() {
   const [activeSection, setActiveSection] = useState('hero');
@@ -22,7 +20,7 @@ export default function App() {
   // Monitor scrolling to highlight correct navbar items dynamically
   useEffect(() => {
     const handleScroll = () => {
-      const sections = ['hero', 'courses', 'playground', 'roadmap', 'testimonials', 'faqs', 'contact'];
+      const sections = ['hero', 'courses', 'faqs', 'contact'];
       const scrollPosition = window.scrollY + 200;
 
       for (const section of sections) {
@@ -72,15 +70,6 @@ export default function App() {
         {/* Detailed Course Matrix Section */}
         <Courses onInquireCourse={handleInquireCourse} />
 
-        {/* Interactive Try-a-Skill Console Section */}
-        <InteractivePlayground />
-
-        {/* Career Pathway Timeline Section */}
-        <Roadmap />
-
-        {/* Customer Success Stories Section */}
-        <Testimonials />
-
         {/* Collapsible FAQ Section */}
         <FAQs />
 
@@ -96,6 +85,9 @@ export default function App() {
 
       {/* Admissions Q&A ChatBot Assistant */}
       <ChatBot />
+
+      {/* Floating Admissions Quick Call button */}
+      <QuickCall />
     </div>
   );
 }

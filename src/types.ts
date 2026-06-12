@@ -1,11 +1,11 @@
 export type CourseCategory =
   | 'all'
-  | 'programming'
   | 'web-dev'
-  | 'ai-ml'
-  | 'prompt-engineering'
+  | 'python'
+  | 'c-language'
   | 'electronics'
-  | 'career-skills';
+  | 'prompt-engineering'
+  | 'java-dsa';
 
 export interface Course {
   id: string;
@@ -21,6 +21,7 @@ export interface Course {
   popular?: boolean;
   rating: number;
   enrolledCount: string;
+  price: number;
 }
 
 export interface Testimonial {

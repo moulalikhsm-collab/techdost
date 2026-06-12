@@ -6,7 +6,6 @@ import {
   Mail,
   MapPin,
   Send,
-  MessageSquare,
   CheckCircle,
   FileCheck,
   Calendar,
@@ -32,10 +31,8 @@ export default function Contact({ initialCourseId, onClearInitialCourseId }: Con
   const [localInquiries, setLocalInquiries] = useState<Inquiry[]>([]);
   const [formSuccess, setFormSuccess] = useState(false);
   const [formError, setFormError] = useState('');
-
-  // WhatsApp quick builder states
-  const [waTopic, setWaTopic] = useState('batch-timing');
-  const [waCustomCourse, setWaCustomCourse] = useState('web-dev');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [successMsg, setSuccessMsg] = useState('');
 
   // Load inquiries from localStorage
   useEffect(() => {
@@ -65,10 +62,11 @@ export default function Contact({ initialCourseId, onClearInitialCourseId }: Con
   }, [initialCourseId, onClearInitialCourseId]);
 
   // Handle Form Submission
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setFormError('');
     setFormSuccess(false);
+    setSuccessMsg('');
 
     // Simple validation
     if (!name.trim()) return setFormError('Please enter your full name.');
@@ -76,40 +74,66 @@ export default function Contact({ initialCourseId, onClearInitialCourseId }: Con
     if (!phone.trim() || phone.length < 8) return setFormError('Please enter a valid telephone contact number.');
     if (!message.trim()) return setFormError('Please add a brief sentence describing your goal.');
 
-    const newInquiry: Inquiry = {
-      id: `inq_${Date.now()}`,
-      name: name.trim(),
-      email: email.trim(),
-      phone: phone.trim(),
-      courseId,
-      message: message.trim(),
-      date: new Date().toLocaleDateString(undefined, {
-        month: 'short',
-        day: 'numeric',
-        year: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit'
-      })
-    };
+    setIsSubmitting(true);
 
-    const updated = [newInquiry, ...localInquiries];
-    setLocalInquiries(updated);
     try {
-      localStorage.setItem('techdost_inquiries', JSON.stringify(updated));
-    } catch (e) {
-      console.error('Error writing to storage:', e);
+      const response = await fetch('/api/contact', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name: name.trim(),
+          email: email.trim(),
+          phone: phone.trim(),
+          courseId,
+          message: message.trim(),
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to submit form.');
+      }
+
+      setSuccessMsg(data.message || 'Your inquiry has been successfully sent!');
+
+      const newInquiry: Inquiry = {
+        id: `inq_${Date.now()}`,
+        name: name.trim(),
+        email: email.trim(),
+        phone: phone.trim(),
+        courseId,
+        message: message.trim(),
+        date: new Date().toLocaleDateString(undefined, {
+          month: 'short',
+          day: 'numeric',
+          year: 'numeric',
+          hour: '2-digit',
+          minute: '2-digit'
+        })
+      };
+
+      const updated = [newInquiry, ...localInquiries];
+      setLocalInquiries(updated);
+      try {
+        localStorage.setItem('techdost_inquiries', JSON.stringify(updated));
+      } catch (e) {
+        console.error('Error writing to storage:', e);
+      }
+
+      setFormSuccess(true);
+      setName('');
+      setEmail('');
+      setPhone('');
+      setMessage('');
+    } catch (err: any) {
+      console.error('Error sending admissions contact form:', err);
+      setFormError(err.message || 'An error occurred while submitting. Please try again.');
+    } finally {
+      setIsSubmitting(false);
     }
-
-    setFormSuccess(true);
-    setName('');
-    setEmail('');
-    setPhone('');
-    setMessage('');
-
-    // Trigger clear success message banner after a while
-    setTimeout(() => {
-      setFormSuccess(false);
-    }, 6000);
   };
 
   // Delete submitted inquiry record from client history
@@ -121,22 +145,6 @@ export default function Contact({ initialCourseId, onClearInitialCourseId }: Con
     } catch (e) {
       console.error('Error syncing local inquiries:', e);
     }
-  };
-
-  // Build real-time pre-filled WhatsApp Links based on quick selections
-  const getWhatsAppLink = () => {
-    const selCourse = COURSES.find((c) => c.id === waCustomCourse)?.title || 'general courses';
-    let text = '';
-    
-    if (waTopic === 'batch-timing') {
-      text = `Hi TechDost! I am interested in enrolling for the upcoming batch of "${selCourse}". Could you please verify the timing slot calendar, fees, and next available dates?`;
-    } else if (waTopic === 'partnership') {
-      text = `Hi Selena! This is regarding an educational partnership/corporate training program with TechDost. I would like to set up a quick review meeting to evaluate syllabuses.`;
-    } else {
-      text = `Hi TechDost support! I have general inquiries about the practical electronics kits or certification guidelines for the "${selCourse}" path.`;
-    }
-
-    return `https://wa.me/919491089687?text=${encodeURIComponent(text)}`;
   };
 
   return (
@@ -165,7 +173,7 @@ export default function Contact({ initialCourseId, onClearInitialCourseId }: Con
           <div className="lg:col-span-5 space-y-8">
             <div className="bg-slate-950 p-6 sm:p-8 rounded-2xl border border-slate-800 space-y-6">
               <h3 className="text-xl font-bold text-white">Direct Communication Desk</h3>
-              <p className="text-slate-450 text-sm leading-relaxed">
+              <p className="text-slate-455 text-sm leading-relaxed">
                 We maintain active lines for prospective students and institutional authorities. Select a channel to speak with an admissions officer immediately.
               </p>
 
@@ -226,61 +234,6 @@ export default function Contact({ initialCourseId, onClearInitialCourseId }: Con
                 </div>
               </div>
             </div>
-
-            {/* Interactive WhatsApp quick template creator */}
-            <div className="bg-gradient-to-tr from-slate-950 via-slate-950 to-slate-900/80 p-6 sm:p-8 rounded-2xl border border-teal-500/10 shadow-lg space-y-4">
-              <div className="flex items-center space-x-2">
-                <MessageSquare className="h-5 w-5 text-emerald-400" />
-                <h4 className="text-base font-extrabold text-white">Admissions Express WhatsApp Desk</h4>
-              </div>
-              <p className="text-xs text-slate-400 leading-relaxed font-sans">
-                Select your targeted inquiry topic and corresponding course track. We compose a standard, high-priority template link so your WhatsApp agent triggers immediately.
-              </p>
-
-              <div className="space-y-3.5 text-xs">
-                {/* Topic Select */}
-                <div className="space-y-1">
-                  <label className="text-slate-300 font-semibold">Select Target Topic</label>
-                  <select
-                    value={waTopic}
-                    onChange={(e) => setWaTopic(e.target.value)}
-                    className="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-white outline-none cursor-pointer"
-                  >
-                    <option value="batch-timing">Check Batch Timing Slots & Fees</option>
-                    <option value="partnership">Propose School Partnership with Selena</option>
-                    <option value="general">Request Course Kit Brochure</option>
-                  </select>
-                </div>
-
-                {/* Course Track Select */}
-                {waTopic !== 'partnership' && (
-                  <div className="space-y-1">
-                    <label className="text-slate-300 font-semibold">Select Course Track</label>
-                    <select
-                      value={waCustomCourse}
-                      onChange={(e) => setWaCustomCourse(e.target.value)}
-                      className="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-white outline-none cursor-pointer"
-                    >
-                      {COURSES.map((c) => (
-                        <option key={c.id} value={c.id}>
-                          {c.title}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                )}
-
-                {/* Launch Button */}
-                <a
-                  href={getWhatsAppLink()}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="block w-full py-3 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold text-center rounded-xl duration-200 shadow-md shadow-emerald-500/5 cursor-pointer mt-4"
-                >
-                  Launch WhatsApp Express
-                </a>
-              </div>
-            </div>
           </div>
 
           {/* Right Column: Digital Inquiry Form */}
@@ -299,8 +252,8 @@ export default function Contact({ initialCourseId, onClearInitialCourseId }: Con
                 <div className="p-4 rounded-xl bg-teal-500/10 border border-teal-500/20 flex items-center space-x-3 text-teal-400">
                   <CheckCircle className="h-5 w-5 flex-shrink-0" />
                   <div className="text-xs font-sans">
-                    <strong className="block font-bold">Inquiry Successfully Compiled!</strong>
-                    Your request was recorded. You can inspect your active logs below this form.
+                    <strong className="block font-bold">Inquiry Processed!</strong>
+                    <span>{successMsg || 'Your session has been recorded. You can inspect your active logs below this form.'}</span>
                   </div>
                 </div>
               )}
@@ -383,9 +336,12 @@ export default function Contact({ initialCourseId, onClearInitialCourseId }: Con
               {/* Button Submit */}
               <button
                 type="submit"
-                className="w-full py-4 rounded-xl text-slate-950 font-extrabold bg-gradient-to-r from-sky-400 to-indigo-500 hover:from-sky-300 hover:to-indigo-400 transition-colors shadow-lg shadow-sky-500/10 cursor-pointer flex items-center justify-center space-x-2"
+                disabled={isSubmitting}
+                className={`w-full py-4 rounded-xl text-slate-950 font-extrabold bg-gradient-to-r from-sky-400 to-indigo-500 hover:from-sky-300 hover:to-indigo-400 transition-colors shadow-lg shadow-sky-500/10 flex items-center justify-center space-x-2 ${
+                  isSubmitting ? 'opacity-60 cursor-not-allowed' : 'cursor-pointer'
+                }`}
               >
-                <span>Send Catalog & Syllabus Request</span>
+                <span>{isSubmitting ? 'Sending Request...' : 'Send Catalog & Syllabus Request'}</span>
                 <Send className="h-4 w-4" />
               </button>
             </form>
