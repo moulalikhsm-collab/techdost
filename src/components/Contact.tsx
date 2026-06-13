@@ -200,7 +200,7 @@ export default function Contact({ initialCourseId, onClearInitialCourseId }: Con
 
                 {/* Email touchpoint */}
                 <a
-                  href="mailto:sereneselina9@gmail.com"
+                  href="mailto:techdostacademy@gmail.com"
                   className="group flex items-start space-x-4 p-4 rounded-xl bg-slate-900/60 border border-slate-850 hover:border-violet-500/30 hover:bg-slate-900 transition-all"
                 >
                   <div className="p-3 rounded-lg bg-indigo-500/10 border border-indigo-400/20 text-indigo-400 group-hover:bg-indigo-500 group-hover:text-white duration-300">
@@ -209,7 +209,7 @@ export default function Contact({ initialCourseId, onClearInitialCourseId }: Con
                   <div>
                     <span className="block text-xs font-mono text-slate-500 uppercase tracking-widest">Additional Info & partnerships</span>
                     <span className="block text-base sm:text-lg font-bold text-white font-mono mt-0.5 group-hover:text-indigo-400 transition-colors break-all">
-                      sereneselina9@gmail.com
+                      techdostacademy@gmail.com
                     </span>
                     <span className="block text-xs text-slate-400 font-sans mt-1">
                       Corporate training proposals, academic affiliations, & curriculum collaborations.

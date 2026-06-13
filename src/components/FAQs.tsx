@@ -71,8 +71,8 @@ export default function FAQs() {
         <div className="text-center mt-12">
           <p className="text-sm text-slate-400">
             Still got questions? Drop a line directly to{' '}
-            <a href="mailto:sereneselina9@gmail.com" className="text-sky-400 hover:underline font-semibold">
-              sereneselina9@gmail.com
+            <a href="mailto:techdostacademy@gmail.com" className="text-sky-400 hover:underline font-semibold">
+              techdostacademy@gmail.com
             </a>{' '}
             or call admissions desk at{' '}
             <a href="tel:9491089687" className="text-sky-400 hover:underline font-bold">

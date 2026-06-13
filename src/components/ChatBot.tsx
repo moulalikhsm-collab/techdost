@@ -81,7 +81,7 @@ export default function ChatBot() {
         ...prev,
         {
           role: "model",
-          content: "I am having trouble routing that request right now. You can get an immediate manual response from our human team at **+91 9491089687** or write to us at **sereneselina9@gmail.com**!"
+          content: "I am having trouble routing that request right now. You can get an immediate manual response from our human team at **+91 9491089687** or write to us at **techdostacademy@gmail.com**!"
         }
       ]);
     } finally {
@@ -318,10 +318,10 @@ export default function ChatBot() {
                   <Phone className="w-3 h-3" /> +91 9491089687
                 </a>
                 <a
-                  href="mailto:sereneselina9@gmail.com"
+                  href="mailto:techdostacademy@gmail.com"
                   className="flex items-center gap-1 hover:text-indigo-400 transition-colors text-right"
                 >
-                  <Mail className="w-3 h-3" /> sereneselina9@gmail.com
+                  <Mail className="w-3 h-3" /> techdostacademy@gmail.com
                 </a>
               </div>
             </div>

@@ -211,11 +211,11 @@ export default function Courses({ onInquireCourse }: CoursesProps) {
           </div>
           <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
             <a
-              href="mailto:sereneselina9@gmail.com?subject=Institution%20Partnership%20Interest&body=Hi%20TechDost!%20I%20would%20like%2520to%20learn%20more%20about%20your%20curriculums%20and%20admissions."
+              href="mailto:techdostacademy@gmail.com?subject=Institution%20Partnership%20Interest&body=Hi%20TechDost!%20I%20would%20like%20to%20learn%2520more%20about%20your%20curriculums%20and%20admissions."
               className="px-6 py-3 w-full sm:w-auto text-slate-200 border border-slate-700 hover:border-slate-600 hover:bg-slate-900 rounded-xl text-xs font-bold transition-all text-center flex items-center justify-center space-x-2"
             >
               <Mail className="h-4 w-4 text-sky-400" />
-              <span>Email Selina</span>
+              <span>Email Admissions</span>
             </a>
             <a
               href="tel:9491089687"

@@ -30,7 +30,7 @@ export default function Footer({ onNavigate }: FooterProps) {
     },
     {
       name: 'LinkedIn',
-      href: 'https://www.linkedin.com',
+      href: 'https://www.linkedin.com/in/techdost-academy-b0a5b6416?utm_source=share_via&utm_content=profile&utm_medium=member_android-linkedin',
       icon: <Linkedin className="h-4.5 w-4.5" />,
       color: 'hover:text-sky-400 hover:border-sky-500/30 hover:bg-sky-500/10',
       tooltip: 'Connect on LinkedIn'
@@ -114,7 +114,7 @@ export default function Footer({ onNavigate }: FooterProps) {
               </a>
 
               <a
-                href="mailto:sereneselina9@gmail.com"
+                href="mailto:techdostacademy@gmail.com"
                 className="flex items-center space-x-3 text-slate-300 hover:text-indigo-400 transition-colors group"
               >
                 <div className="p-2 bg-slate-900 border border-slate-800 rounded-lg group-hover:bg-indigo-500/10 group-hover:border-indigo-500/20 duration-300">
@@ -122,7 +122,7 @@ export default function Footer({ onNavigate }: FooterProps) {
                 </div>
                 <div>
                   <span className="block text-[10px] font-mono text-slate-500 uppercase tracking-wider leading-none">Partnerships & Support</span>
-                  <span className="text-sm font-semibold font-mono text-white mt-1 block break-all">sereneselina9@gmail.com</span>
+                  <span className="text-sm font-semibold font-mono text-white mt-1 block break-all">techdostacademy@gmail.com</span>
                 </div>
               </a>
             </div>

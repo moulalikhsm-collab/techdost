@@ -188,6 +188,6 @@ export const FAQS = [
   {
     id: '3',
     question: 'How do I reach the team for specialized admissions or institution partnerships?',
-    answer: 'You can immediately call or text our admissions desk at +91 9491089687, or submit an official query using our online contact system. For corporate online trainings and university partnership designs, write directly to sereneselina9@gmail.com.'
+    answer: 'You can immediately call or text our admissions desk at +91 9491089687, or submit an official query using our online contact system. For corporate online trainings and university partnership designs, write directly to techdostacademy@gmail.com.'
   }
 ];

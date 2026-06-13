@@ -51,14 +51,14 @@ async function startServer() {
         return res.json({
           success: true,
           warned: true,
-          message: "Thank you! Your inquiries are processed successfully! (Note: Since SMTP server secrets are not active in the app's settings yet, the digital enrollment wasn't sent to 'sereneselina9@gmail.com' via SMTP, but it is logged on your locally persistent console list below!)."
+          message: "Thank you! Your inquiries are processed successfully! (Note: Since SMTP server secrets are not active in the app's settings yet, the digital enrollment wasn't sent to 'techdostacademy@gmail.com' via SMTP, but it is logged on your locally persistent console list below!)."
         });
       }
 
       const smtpUser = process.env.SMTP_USER;
       await transporter.sendMail({
         from: `"TechDost Admissions" <${smtpUser}>`,
-        to: "sereneselina9@gmail.com",
+        to: "techdostacademy@gmail.com",
         replyTo: email,
         subject: `[TechDost Enrollment] Inquiry from ${name} (${courseId.toUpperCase()})`,
         text: `New Admissions Form Submission:\n\nStudent Name: ${name}\nEmail Address: ${email}\nTelephone: ${phone}\nTactical Course: ${courseId}\n\nCareer Goals / Inquiry:\n${message}\n\n-- TechDost Admissions Hub`,
@@ -97,17 +97,17 @@ async function startServer() {
         `,
       });
 
-      console.log(`[Admissions Engine] Email successfully dispatched to sereneselina9@gmail.com!`);
+      console.log(`[Admissions Engine] Email successfully dispatched to techdostacademy@gmail.com!`);
       return res.json({
         success: true,
-        message: "Your inquiry has been successfully sent directly to 'sereneselina9@gmail.com'! We will reach out to you within 24 hours."
+        message: "Your inquiry has been successfully sent directly to 'techdostacademy@gmail.com'! We will reach out to you within 24 hours."
       });
     } catch (err: any) {
       console.error("[Admissions Engine] Email delivery err:", err);
       return res.json({
         success: true,
         warned: true,
-        message: `Your inquiry was submitted successfully! (Note: There was an issue delivering the email to 'sereneselina9@gmail.com' due to SMTP server authorization failure: ${err.message || err}. You can see your inquiry safely registered below!).`
+        message: `Your inquiry was submitted successfully! (Note: There was an issue delivering the email to 'techdostacademy@gmail.com' due to SMTP server authorization failure: ${err.message || err}. You can see your inquiry safely registered below!).`
       });
     }
   });
@@ -125,7 +125,7 @@ async function startServer() {
       if (!apiKey || apiKey === "MY_GEMINI_API_KEY") {
         console.warn("GEMINI_API_KEY environment variable is not configured.");
         return res.json({
-          text: "Hi there! I am DostAI, your TechDost helper. It seems my Gemini API Key is not configured yet in the Settings secrets. But don't worry! You can call or text our direct admissions team at **+91 9491089687** or email us at **sereneselina9@gmail.com** for immediate inquiry support!"
+          text: "Hi there! I am DostAI, your TechDost helper. It seems my Gemini API Key is not configured yet in the Settings secrets. But don't worry! You can call or text our direct admissions team at **+91 9491089687** or email us at **techdostacademy@gmail.com** for immediate inquiry support!"
         });
       }
 
@@ -167,7 +167,7 @@ Here are the complete details of TechDost:
 
 ### 2. CORE CONTACT DETAILS (Critical!)
 - Admission/Inquiry Hotline: +91 9491089687 (For immediate enrollment, course queries, batch timings, and custom support).
-- Email Address: sereneselina9@gmail.com (For additional information, institutional integrations, and corporate partnership negotiations).
+- Email Address: techdostacademy@gmail.com (For additional information, institutional integrations, and corporate partnership negotiations).
 
 ### 3. COMPLETE COURSE PORTFOLIO
 
@@ -252,7 +252,7 @@ F. Prompt Engineering Course:
 - Kits/Hardware: Since our training is 100% online, we assist in sourcing components online via detailed guides and utilize high-fidelity virtual simulators like Tinkercad and Wokwi for circuit prototyping.
 - Prerequisites: Absolutely zero programming background required for beginner-friendly tracks!
 - Format: 100% online hybrid format, combining flexible pre-recorded conceptual drills with live interactive online workshops, Screen-share code reviews, and direct 1-on-1 virtual mentoring sessions.
-- Contact hotline: Call/text admission desk at +91 9491089687, or write to sereneselina9@gmail.com.
+- Contact hotline: Call/text admission desk at +91 9491089687, or write to techdostacademy@gmail.com.
 
 ### 5. STUDENT SUCCESS STORIES
 - Rahul Kumar: Full-Stack Developer, placed at TCS Global Services.
@@ -264,7 +264,7 @@ F. Prompt Engineering Course:
 1. Speak as DostAI. Be respectful, highly welcoming, informative, and encouraging.
 2. If asked about syllabus, timings, features, or admissions, display details in clean markdown tables or formatted bullet lists.
 3. Keep answers concise, direct, helpful, and free from corporate filler language.
-4. When concluding advice or if the user asks for exact dates/fee breakdowns/partnerships/custom mentorship plans, ALWAYS prompt them to reach out to our admission team via +91 9491089687 or by emailing sereneselina9@gmail.com.
+4. When concluding advice or if the user asks for exact dates/fee breakdowns/partnerships/custom mentorship plans, ALWAYS prompt them to reach out to our admission team via +91 9491089687 or by emailing techdostacademy@gmail.com.
 5. If the user asks general, irrelevant, or highly abstract off-topic questions, maintain your persona, answer briefly if appropriate, and then tie the theme back to one of TechDost's training programs. Let's stay focused on tech learning!`
         }
       });
